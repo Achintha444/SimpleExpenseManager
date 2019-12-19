@@ -30,7 +30,7 @@ import java.text.ParseException;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.R;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
-import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.InMemoryDemoExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.PersistentMemoryExpenseManager;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.DBHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         DBHelper db = new DBHelper(this);
 
         try {
-            expenseManager = new InMemoryDemoExpenseManager(db);
+            expenseManager = new PersistentMemoryExpenseManager(db);
         } catch (ParseException e) {
             e.printStackTrace();
         }
