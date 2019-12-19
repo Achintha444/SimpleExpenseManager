@@ -17,6 +17,7 @@
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.control;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +25,9 @@ import java.util.List;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.exception.ExpenseManagerException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.AccountDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.TransactionDAO;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.DatabaseException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidBalanceException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Transaction;
@@ -58,7 +61,7 @@ public abstract class ExpenseManager implements Serializable {
      * @throws InvalidAccountException
      */
     public void updateAccountBalance(String accountNo, int day, int month, int year, ExpenseType expenseType,
-                                     String amount) throws InvalidAccountException {
+                                     String amount) throws InvalidAccountException, DatabaseException {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
         Date transactionDate = calendar.getTime();
@@ -66,7 +69,13 @@ public abstract class ExpenseManager implements Serializable {
         if (!amount.isEmpty()) {
             double amountVal = Double.parseDouble(amount);
             transactionsHolder.logTransaction(transactionDate, accountNo, expenseType, amountVal);
-            accountsHolder.updateBalance(accountNo, expenseType, amountVal);
+            try {
+                accountsHolder.updateBalance(accountNo, expenseType, amountVal);
+            } catch (InvalidBalanceException e) {
+                e.printStackTrace();
+            } catch (DatabaseException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -89,7 +98,11 @@ public abstract class ExpenseManager implements Serializable {
      */
     public void addAccount(String accountNo, String bankName, String accountHolderName, double initialBalance) {
         Account account = new Account(accountNo, bankName, accountHolderName, initialBalance);
-        accountsHolder.addAccount(account);
+        try {
+            accountsHolder.addAccount(account);
+        } catch (InvalidAccountException e) {
+            e.printStackTrace();
+        }
     }
 
     /***
@@ -132,5 +145,5 @@ public abstract class ExpenseManager implements Serializable {
      * This method should be implemented by the concrete implementation of this class. It will dictate how the DAO
      * objects will be initialized.
      */
-    public abstract void setup() throws ExpenseManagerException;
+    public abstract void setup() throws ExpenseManagerException, ParseException;
 }

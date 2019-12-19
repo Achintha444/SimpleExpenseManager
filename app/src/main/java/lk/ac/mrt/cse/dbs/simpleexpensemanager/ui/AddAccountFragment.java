@@ -16,13 +16,16 @@
 
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.ui;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.R;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
@@ -95,8 +98,25 @@ public class AddAccountFragment extends Fragment implements View.OnClickListener
                 }
 
                 if (currentExpenseManager != null) {
-                    currentExpenseManager.addAccount(accountNumStr, bankNameStr, accountHolderStr,
-                            Double.parseDouble(initialBalanceStr));
+                    try {
+                        currentExpenseManager.addAccount(accountNumStr, bankNameStr, accountHolderStr,
+                                Double.parseDouble(initialBalanceStr));
+                        Toast.makeText(this.getContext(),"Account Added Successfully!", Toast.LENGTH_LONG).show();
+                    }
+
+                    catch (Exception ex){
+                        new AlertDialog.Builder(this.getActivity())
+                                .setTitle("Error Occured Try Again!")
+                                .setMessage(ex.getMessage())
+                                .setNeutralButton(this.getString(R.string.msg_ok),
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.cancel();
+                                            }
+                                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                    }
+
                 }
                 cleanUp();
                 break;

@@ -16,36 +16,51 @@
 
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.control;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
+import java.text.ParseException;
+
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.AccountDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.TransactionDAO;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.InMemoryAccountDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.InMemoryTransactionDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.DBHelper;
 
 /**
  *
  */
 public class InMemoryDemoExpenseManager extends ExpenseManager {
 
-    public InMemoryDemoExpenseManager() {
+    DBHelper db;
+
+    public InMemoryDemoExpenseManager(DBHelper db) throws ParseException {
+        this.db = db;
         setup();
     }
 
     @Override
-    public void setup() {
+    public void setup() throws ParseException {
         /*** Begin generating dummy data for In-Memory implementation ***/
 
-        TransactionDAO inMemoryTransactionDAO = new InMemoryTransactionDAO();
+        TransactionDAO inMemoryTransactionDAO = new InMemoryTransactionDAO(this.db);
         setTransactionsDAO(inMemoryTransactionDAO);
 
-        AccountDAO inMemoryAccountDAO = new InMemoryAccountDAO();
+        AccountDAO inMemoryAccountDAO = new InMemoryAccountDAO(this.db);
         setAccountsDAO(inMemoryAccountDAO);
 
         // dummy data
         Account dummyAcct1 = new Account("12345A", "Yoda Bank", "Anakin Skywalker", 10000.0);
         Account dummyAcct2 = new Account("78945Z", "Clone BC", "Obi-Wan Kenobi", 80000.0);
-        getAccountsDAO().addAccount(dummyAcct1);
-        getAccountsDAO().addAccount(dummyAcct2);
+
+        try {
+            getAccountsDAO().addAccount(dummyAcct1);
+            getAccountsDAO().addAccount(dummyAcct2);
+        } catch (InvalidAccountException e) {
+            e.printStackTrace();
+        }
 
         /*** End ***/
     }

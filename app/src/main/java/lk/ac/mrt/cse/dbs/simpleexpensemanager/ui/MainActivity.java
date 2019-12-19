@@ -24,10 +24,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.database.sqlite.*;
+
+import java.text.ParseException;
 
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.R;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.InMemoryDemoExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.DBHelper;
 
 public class MainActivity extends AppCompatActivity {
     private ExpenseManager expenseManager;
@@ -65,7 +69,24 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         /***  Begin generating dummy data for In-Memory implementation  ***/
-        expenseManager = new InMemoryDemoExpenseManager();
+        DBHelper db = new DBHelper(this);
+
+        try {
+            expenseManager = new InMemoryDemoExpenseManager(db);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//        SQLiteDatabase mydatabase = openOrCreateDatabase("SimpleExpenseManager",MODE_PRIVATE,null);
+//        //Createad the account table to keep the account details  of accounts
+//        mydatabase.execSQL("CREATE TABLE IF NOT EXISTS account (account_number CHAR(6) NOT NULL, bank VARCHAR(100) NOT NULL, accountHolder VARCHAR(200) NOT NULL, balance numeric (10,2) NOT NULL, deleted BOOLEAN NOT NULL, PRIMARY KEY(account_number));");
+//        //Created the tranasaction table to keep track of the tranasaction logs.
+//        mydatabase.execSQL("CREATE TABLE IF NOT EXISTS transaction_detail (transaction_id INTEGER  PRIMARY KEY AUTOINCREMENT,date date NOT NULL, account_number CHAR(6) NOT NULL, type CHAR(7) NOT NULL CHECK(type IN ('EXPENSE','INCOME')), amount numeric (10,2) NOT NULL, FOREIGN KEY (account_number) REFERENCES account(account_number)); ");
+
+//        System.out.println(mydatabase.getPath());
+//        System.out.println(mydatabase.toString());
+
+
+
         /*** END ***/
     }
 
